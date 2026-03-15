@@ -69,9 +69,27 @@ function App() {
 
   const hasPrices =
     data?.goldWithTechron && data?.platinumWithTechron && data?.lastUpdated
-  
-  const discount_gold_price = (300-(300/parseFloat(data?.goldWithTechron || '0'))*11.38)/(350/parseFloat(data?.goldWithTechron || '0'))
-  const discount_platinum_price = (300-(300/parseFloat(data?.platinumWithTechron || '0'))*12.08)/(350/parseFloat(data?.platinumWithTechron || '0'))
+
+  const goldPrice = Number.parseFloat(data?.goldWithTechron ?? '')
+  const platinumPrice = Number.parseFloat(data?.platinumWithTechron ?? '')
+  const hasNumericPrices = Number.isFinite(goldPrice) && Number.isFinite(platinumPrice)
+
+  const discount_gold_price = hasNumericPrices
+    ? (300 - (300 / goldPrice) * 11.38) / (350 / goldPrice)
+    : null
+  const discount_platinum_price = hasNumericPrices
+    ? (300 - (300 / platinumPrice) * 12.08) / (350 / platinumPrice)
+    : null
+
+  const cheapestDiscountCard =
+    discount_gold_price === null || discount_platinum_price === null
+      ? null
+      : discount_gold_price === discount_platinum_price
+        ? 'both'
+        : discount_gold_price < discount_platinum_price
+          ? 'gold'
+          : 'platinum'
+
   return (
     <main className="app-shell">
       <section className="panel">
@@ -110,27 +128,38 @@ function App() {
               {hasPrices ? `${data?.currency} ${data?.platinumWithTechron}` : '--'}
             </p>
           </article>
+          </div>
+          
+          <div className="grid">
 
-          <article className="meta-card">
-            <h2>Last Updated Time</h2>
-            <p className="meta-value">{hasPrices ? data?.lastUpdated : '--'}</p>
-          </article>
-
-          <article className="price-card">
+          <article
+            className={`price-card ${cheapestDiscountCard === 'gold' || cheapestDiscountCard === 'both' ? 'cheapest' : ''}`}
+          >
             <h2>Gold (Discounts)</h2>
             <p className="price-value">
-              {hasPrices ? `${data?.currency} ${discount_gold_price.toFixed(2)}` : '--'}
+              {hasPrices && discount_gold_price !== null
+                ? `${data?.currency} ${discount_gold_price.toFixed(2)}`
+                : '--'}
             </p>
           </article>
 
-          <article className="price-card">
+          <article
+            className={`price-card ${cheapestDiscountCard === 'platinum' || cheapestDiscountCard === 'both' ? 'cheapest' : ''}`}
+          >
             <h2>Platinum (Discounts)</h2>
             <p className="price-value">
-              {hasPrices ? `${data?.currency} ${discount_platinum_price.toFixed(2)}` : '--'}
+              {hasPrices && discount_platinum_price !== null
+                ? `${data?.currency} ${discount_platinum_price.toFixed(2)}`
+                : '--'}
             </p>
           </article>
-        </div>
+        
 
+        <article className="meta-card">
+            <h2>Last Update By Caltex</h2>
+            <p className="meta-value">{hasPrices ? data?.lastUpdated : '--'}</p>
+          </article>
+</div>
         <div className="footer">
           <p>
             Source:{' '}
@@ -138,7 +167,7 @@ function App() {
               Caltex Fuel Prices
             </a>
           </p>
-          <p>Scraped at: {data?.scrapedAt ?? '--'}</p>
+          <p>Scraped at: {data?.scrapedAt ?? '--'} by Joooooooo1011</p>
         </div>
       </section>
     </main>

@@ -18,7 +18,7 @@ function escapeRegex(value) {
 
 function extractPrice(text, label) {
   const pattern = new RegExp(
-    `${escapeRegex(label)}[\\s\\S]{0,120}?(?:HK\\$|HKD)\\s*(\\d{1,2}\\.\\d{2})`,
+    `${escapeRegex(label)}[\\s\\S]{0,120}?(?:HK\\$|HKD)\\s*(\\d{1,2}\\.\\d{1,2})`,
     'i',
   )
   return text.match(pattern)?.[1] ?? null

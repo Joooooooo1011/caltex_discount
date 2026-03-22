@@ -1,4 +1,4 @@
-import { useEffect, useState, type KeyboardEvent } from 'react'
+import { useEffect, useState, type ChangeEvent, type KeyboardEvent } from 'react'
 import './App.css'
 
 type FuelPriceData = {
@@ -117,6 +117,16 @@ function App() {
   const closeCalculator = () => {
     setCalculatorTarget(null)
     setLitresInput('')
+  }
+
+  const handleLitresInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const nextValue = event.target.value
+    const sanitized = nextValue
+      .replace(',', '.')
+      .replace(/[^0-9.]/g, '')
+      .replace(/(\..*)\./g, '$1')
+
+    setLitresInput(sanitized)
   }
 
   const onCardKeyDown = (
@@ -255,6 +265,15 @@ function App() {
             className="calculator-popup"
             onClick={(event) => event.stopPropagation()}
           >
+            <button
+              type="button"
+              className="calculator-close-icon"
+              onClick={closeCalculator}
+              aria-label="Close calculator"
+            >
+              x
+            </button>
+
             <h2>{calculatorTarget.label} Calculator</h2>
             <p className="calculator-note">
               Formula: ({data?.currency ?? 'HKD'}/L * L)
@@ -266,25 +285,21 @@ function App() {
             <label htmlFor="litres-input">Litres</label>
             <input
               id="litres-input"
-              type="number"
+              type="text"
+              inputMode="decimal"
+              pattern="[0-9]*[.]?[0-9]*"
+              enterKeyHint="done"
+              autoComplete="off"
               min="0"
               step="0.01"
               value={litresInput}
-              onChange={(event) => setLitresInput(event.target.value)}
+              onChange={handleLitresInputChange}
               placeholder="e.g. 35"
             />
 
             <p className="calculator-total">
               Total: {calculatedTotal !== null ? `${data?.currency ?? 'HKD'} ${calculatedTotal.toFixed(2)}` : '--'}
             </p>
-
-            <button
-              type="button"
-              className="calculator-close"
-              onClick={closeCalculator}
-            >
-              Close
-            </button>
           </section>
         </div>
       )}

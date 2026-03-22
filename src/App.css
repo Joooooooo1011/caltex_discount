@@ -70,6 +70,28 @@
   text-align: left;
 }
 
+.price-card-clickable {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.price-card-clickable:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px -18px rgba(0, 0, 0, 0.8);
+}
+
+.price-card-clickable:focus-visible {
+  outline: 2px solid #005ce6;
+  outline-offset: 2px;
+}
+
+.price-card-clickable[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.72;
+  transform: none;
+  box-shadow: none;
+}
+
 .price-card.cheapest {
   position: relative;
   overflow: hidden;
@@ -185,6 +207,94 @@
   font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.3px;
+}
+
+.price-value-button {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-h);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.price-value-button:hover {
+  text-decoration: underline;
+}
+
+.price-value-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+  text-decoration: none;
+}
+
+.calculator-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 10, 17, 0.45);
+  display: grid;
+  place-items: center;
+  z-index: 20;
+  padding: 16px;
+}
+
+.calculator-popup {
+  width: min(400px, 100%);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+  text-align: left;
+}
+
+.calculator-popup h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+}
+
+.calculator-note,
+.calculator-rate {
+  margin: 6px 0;
+}
+
+.calculator-popup label {
+  display: block;
+  margin-top: 12px;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.calculator-popup input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 16px;
+}
+
+.calculator-total {
+  margin-top: 14px;
+  color: var(--text-h);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.calculator-close {
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #f6f7f9;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.calculator-close:hover {
+  background: #eceff4;
 }
 
 .footer {

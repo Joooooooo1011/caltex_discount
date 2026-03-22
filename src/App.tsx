@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type KeyboardEvent } from 'react'
 import './App.css'
 
 type FuelPriceData = {
@@ -10,12 +10,20 @@ type FuelPriceData = {
   lastUpdated: string | null
 }
 
+type CalculatorTarget = {
+  label: string
+  pricePerLitre: number
+}
+
 function App() {
   const [data, setData] = useState<FuelPriceData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [mode, setMode] = useState<'serverless' | 'cached' | null>(null)
+  const [calculatorTarget, setCalculatorTarget] =
+    useState<CalculatorTarget | null>(null)
+  const [litresInput, setLitresInput] = useState('')
 
   useEffect(() => {
     const controller = new AbortController()
@@ -90,6 +98,42 @@ function App() {
           ? 'gold'
           : 'platinum'
 
+  const litres = Number.parseFloat(litresInput)
+  const hasValidLitres = Number.isFinite(litres) && litres > 0
+  const calculatedTotal =
+    calculatorTarget && hasValidLitres
+      ? calculatorTarget.pricePerLitre * litres
+      : null
+
+  const openCalculator = (label: string, pricePerLitre: number) => {
+    if (!Number.isFinite(pricePerLitre)) {
+      return
+    }
+
+    setCalculatorTarget({ label, pricePerLitre })
+    setLitresInput('')
+  }
+
+  const closeCalculator = () => {
+    setCalculatorTarget(null)
+    setLitresInput('')
+  }
+
+  const onCardKeyDown = (
+    event: KeyboardEvent<HTMLElement>,
+    label: string,
+    pricePerLitre: number | null,
+  ) => {
+    if (pricePerLitre === null || !Number.isFinite(pricePerLitre)) {
+      return
+    }
+
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      openCalculator(label, pricePerLitre)
+    }
+  }
+
   return (
     <main className="app-shell">
       <section className="panel">
@@ -115,25 +159,48 @@ function App() {
         </div>
 
         <div className="grid">
-          <article className="price-card">
+          <article
+            className="price-card price-card-clickable"
+            role="button"
+            tabIndex={0}
+            onClick={() => openCalculator('Gold', goldPrice)}
+            onKeyDown={(event) => onCardKeyDown(event, 'Gold', goldPrice)}
+          >
             <h2>Gold</h2>
             <p className="price-value">
               {hasPrices ? `${data?.currency} ${data?.goldWithTechron}` : '--'}
             </p>
           </article>
 
-          <article className="price-card">
+          <article
+            className="price-card price-card-clickable"
+            role="button"
+            tabIndex={0}
+            onClick={() => openCalculator('Platinum', platinumPrice)}
+            onKeyDown={(event) => onCardKeyDown(event, 'Platinum', platinumPrice)}
+          >
             <h2>Platinum</h2>
             <p className="price-value">
               {hasPrices ? `${data?.currency} ${data?.platinumWithTechron}` : '--'}
             </p>
           </article>
-          </div>
-          
-          <div className="grid">
+        </div>
+
+        <div className="grid">
 
           <article
-            className={`price-card ${cheapestDiscountCard === 'gold' || cheapestDiscountCard === 'both' ? 'cheapest' : ''}`}
+            className={`price-card price-card-clickable ${cheapestDiscountCard === 'gold' || cheapestDiscountCard === 'both' ? 'cheapest' : ''}`}
+            role="button"
+            tabIndex={discount_gold_price === null ? -1 : 0}
+            aria-disabled={discount_gold_price === null}
+            onClick={() => {
+              if (discount_gold_price !== null) {
+                openCalculator('Gold (Discounts)', discount_gold_price)
+              }
+            }}
+            onKeyDown={(event) =>
+              onCardKeyDown(event, 'Gold (Discounts)', discount_gold_price)
+            }
           >
             <h2>Gold (Discounts)</h2>
             <p className="price-value">
@@ -144,7 +211,18 @@ function App() {
           </article>
 
           <article
-            className={`price-card ${cheapestDiscountCard === 'platinum' || cheapestDiscountCard === 'both' ? 'cheapest' : ''}`}
+            className={`price-card price-card-clickable ${cheapestDiscountCard === 'platinum' || cheapestDiscountCard === 'both' ? 'cheapest' : ''}`}
+            role="button"
+            tabIndex={discount_platinum_price === null ? -1 : 0}
+            aria-disabled={discount_platinum_price === null}
+            onClick={() => {
+              if (discount_platinum_price !== null) {
+                openCalculator('Platinum (Discounts)', discount_platinum_price)
+              }
+            }}
+            onKeyDown={(event) =>
+              onCardKeyDown(event, 'Platinum (Discounts)', discount_platinum_price)
+            }
           >
             <h2>Platinum (Discounts)</h2>
             <p className="price-value">
@@ -153,13 +231,13 @@ function App() {
                 : '--'}
             </p>
           </article>
-        
 
-        <article className="meta-card">
+          <article className="meta-card">
             <h2>Last Update By Caltex</h2>
             <p className="meta-value">{hasPrices ? data?.lastUpdated : '--'}</p>
           </article>
-</div>
+        </div>
+
         <div className="footer">
           <p>
             Source:{' '}
@@ -170,6 +248,46 @@ function App() {
           <p>Scraped at: {data?.scrapedAt ?? '--'} by Joooooooo1011</p>
         </div>
       </section>
+
+      {calculatorTarget && (
+        <div className="calculator-overlay" onClick={closeCalculator}>
+          <section
+            className="calculator-popup"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h2>{calculatorTarget.label} Calculator</h2>
+            <p className="calculator-note">
+              Formula: ({data?.currency ?? 'HKD'}/L * L)
+            </p>
+            <p className="calculator-rate">
+              Rate: {(data?.currency ?? 'HKD')} {calculatorTarget.pricePerLitre.toFixed(2)} / L
+            </p>
+
+            <label htmlFor="litres-input">Litres</label>
+            <input
+              id="litres-input"
+              type="number"
+              min="0"
+              step="0.01"
+              value={litresInput}
+              onChange={(event) => setLitresInput(event.target.value)}
+              placeholder="e.g. 35"
+            />
+
+            <p className="calculator-total">
+              Total: {calculatedTotal !== null ? `${data?.currency ?? 'HKD'} ${calculatedTotal.toFixed(2)}` : '--'}
+            </p>
+
+            <button
+              type="button"
+              className="calculator-close"
+              onClick={closeCalculator}
+            >
+              Close
+            </button>
+          </section>
+        </div>
+      )}
     </main>
   )
 }

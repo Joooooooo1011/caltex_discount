@@ -160,8 +160,8 @@ function App() {
         <p className="kicker">Caltex Hong Kong</p>
         <h1>Fuel Price Tracker</h1>
         <p className="subtitle">
-          HSBC staff Discount: -HKD 12.38 / 13.08 per litre <br />
-          Sunday Discount: HKD 50 off for every HKD 350 spent on fuel
+          HSBC staff Discount: - 12.38 / 13.08 HKD per Litre <br />
+          Sunday Discount: 50 HKD off for every 350 HKD spent on fuel
         </p>
 
         <div className="status-row">
@@ -192,7 +192,7 @@ function App() {
           >
             <h2>Gold</h2>
             <p className="price-value">
-              {hasPrices ? `${data?.currency} ${data?.goldWithTechron}` : "--"}
+              {hasPrices ? `${data?.goldWithTechron} ${data?.currency}` : "--"}
             </p>
           </article>
 
@@ -208,7 +208,7 @@ function App() {
             <h2>Platinum</h2>
             <p className="price-value">
               {hasPrices
-                ? `${data?.currency} ${data?.platinumWithTechron}`
+                ? `${data?.platinumWithTechron} ${data?.currency}`
                 : "--"}
             </p>
           </article>
@@ -232,7 +232,7 @@ function App() {
             <h2>Gold (Discounts)</h2>
             <p className="price-value">
               {hasPrices && discount_gold_price !== null
-                ? `${data?.currency} ${discount_gold_price.toFixed(2)}`
+                ? `${discount_gold_price.toFixed(2)} ${data?.currency}`
                 : "--"}
             </p>
           </article>
@@ -258,7 +258,7 @@ function App() {
             <h2>Platinum (Discounts)</h2>
             <p className="price-value">
               {hasPrices && discount_platinum_price !== null
-                ? `${data?.currency} ${discount_platinum_price.toFixed(2)}`
+                ? `${discount_platinum_price.toFixed(2)} ${data?.currency}`
                 : "--"}
             </p>
           </article>
@@ -304,12 +304,9 @@ function App() {
             </button>
 
             <h2>{calculatorTarget.label} Calculator</h2>
-            <p className="calculator-note">
-              Formula: ({data?.currency ?? "HKD"}/L * L)
-            </p>
+            <p className="calculator-note">Formula: (HKD/L * L)</p>
             <p className="calculator-rate">
-              Rate: {data?.currency ?? "HKD"}{" "}
-              {calculatorTarget.pricePerLitre.toFixed(2)} / L
+              Rate: {calculatorTarget.pricePerLitre.toFixed(2)} HKD / L
             </p>
 
             <label htmlFor="litres-input">Litres</label>
@@ -330,7 +327,7 @@ function App() {
             <p className="calculator-total">
               Total:{" "}
               {calculatedTotal !== null
-                ? `${data?.currency ?? "HKD"} ${calculatedTotal.toFixed(2)}`
+                ? `${calculatedTotal.toFixed(2)} HKD`
                 : "--"}
             </p>
           </section>

@@ -93,10 +93,10 @@ function App() {
     Number.isFinite(goldPrice) && Number.isFinite(platinumPrice);
 
   const discount_gold_price = hasNumericPrices
-    ? (300 - (300 / goldPrice) * 11.38) / (350 / goldPrice)
+    ? (300 - (300 / goldPrice) * 12.38) / (350 / goldPrice)
     : null;
   const discount_platinum_price = hasNumericPrices
-    ? (300 - (300 / platinumPrice) * 12.08) / (350 / platinumPrice)
+    ? (300 - (300 / platinumPrice) * 13.08) / (350 / platinumPrice)
     : null;
 
   const cheapestDiscountCard =
@@ -160,7 +160,7 @@ function App() {
         <p className="kicker">Caltex Hong Kong</p>
         <h1>Fuel Price Tracker</h1>
         <p className="subtitle">
-          HSBC staff Discount: -HKD 11.38 / 12.08 per litre <br />
+          HSBC staff Discount: -HKD 12.38 / 13.08 per litre <br />
           Sunday Discount: HKD 50 off for every HKD 350 spent on fuel
         </p>
 
@@ -324,7 +324,7 @@ function App() {
               step="0.01"
               value={litresInput}
               onChange={handleLitresInputChange}
-              placeholder="e.g. 35"
+              placeholder="(e.g. 50)"
             />
 
             <p className="calculator-total">
